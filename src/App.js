@@ -1,24 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import axios from "axios";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Home from './page/Home'
+import Search from "./components/Search";
+import DetailBook from "./page/DetailBook";
 
 function App() {
+  const [books, setBooks] = useState([]);
+
+  const getbook = async () => {
+    const data = await axios.get("https://se-book-store.herokuapp.com/api/v1/books",{});
+    setBooks(data.data);
+  };
+
+  const getdetailbook = async (isbn) => {
+    const data = await axios.get(
+      `https://se-book-store.herokuapp.com/api/v1/books/${isbn}`,{}
+    );
+    setBooks(data.data);
+  };
+
+  
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Search />
+      <Routes>
+        <Route path="/" element={<Home handledOnLoad={getbook} books={books} />} />
+        <Route path="/Detail/:isbn" element={<DetailBook getdetailbook={getdetailbook} books={books} />} />
+      </Routes>
+    </Router>
   );
 }
 
